@@ -2,6 +2,9 @@
 
 Repository for planning and brainstorming on VirtualCSS.
 
+*If you are interested in this project and want to join the discussion
+please leave a comment in this [issue](https://github.com/VirtualCSS/planning/issues/1).*
+
 # Goal
 
 There seem many projects that try to define styling in the context of
