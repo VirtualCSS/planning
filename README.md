@@ -1,6 +1,6 @@
-# planing for VirtualCSS
+# planning for VirtualCSS
 
-Repository for planing and brainstorming on VirtualCSS.
+Repository for planning and brainstorming on VirtualCSS.
 
 # Goal
 
