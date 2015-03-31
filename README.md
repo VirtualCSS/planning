@@ -1,4 +1,4 @@
-# planning for VirtualCSS
+# Planning for VirtualCSS
 
 Repository for planning and brainstorming on VirtualCSS.
 
