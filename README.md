@@ -8,6 +8,10 @@ the differnet libraries can talk to and to provide common functionality
 like mounting styles in a `<style>` element in the browser, optimize
 the declared styles for production builds and so on.
 
+An initial goal of this repository is to determine all the requirements and
+constraints for the libraries that would build on top of VirtualCSS and
+afterwards come up with an API to fit all the requirements.
+
 For initial thoughts on the VirtualCSS system see the blog post [here](https://medium.com/@jviereck/modularise-css-the-react-way-1e817b317b04).
 
 # License
