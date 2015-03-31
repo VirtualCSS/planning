@@ -1,14 +1,17 @@
 # planing for VirtualCSS
 
-Repository for planing and brainstorming on the VirtualCSS system.
+Repository for planing and brainstorming on VirtualCSS.
 
-There are many projects that try to define styling in the context of
+# Goal
+
+There seem many projects that try to define styling in the context of
 ReactJS. The goal of VirtualCSS is to serve as a foundation that all
 the differnet libraries can talk to and to provide common functionality
-like mounting styles in a `<style>` element in the browser, optimize
-the declared styles for production builds and so on.
+like mounting styles in a `<style>` element in the browser, provide 
+devtools plugins that work in Chrome/Firefox, optimize the declared
+styles for production builds and so on forth.
 
-An initial goal of this repository is to determine all the requirements and
+An initial goal of this repository might be to determine all the requirements and
 constraints for the libraries that would build on top of VirtualCSS and
 afterwards come up with an API to fit all the requirements.
 
