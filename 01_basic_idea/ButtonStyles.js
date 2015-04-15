@@ -2,7 +2,7 @@
 
 var StyleSheet = require('react-style');
 
-var ButtonStyles = StyleSheet.create({
+var ButtonStyles = module.exports = StyleSheet.create({
 
   primary: {
     backgroundColor: 'rgb(0, 120, 231)',
@@ -20,5 +20,3 @@ var ButtonStyles = StyleSheet.create({
   }
 
 });
-
-module.exports = ButtonStyles;

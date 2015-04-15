@@ -7,3 +7,94 @@ https://github.com/js-next/react-style/tree/f957e09dfb4948/examples/0.13/syntax
 ```
 
 and later modified to fit the design idea behind VirtualCSS.
+
+## Changes compared to react-style
+
+Overall, the changes listed here are required to make the analysis of the code
+to emit a static CSS easier/possible eventually.
+
+1. To make the code easier to analyse, the exports and style definitions
+must be done on the same line and the style definitions must be done before the
+styles are first used in the code.
+
+``` js
+// react-style:
+var ButtonStyles = StyleSheet.create({
+  ...
+});
+
+module.exports = ButtonStyles;
+
+// VirtualCSS:
+var ButtonStyles = module.exports = StyleSheet.create({
+  ...
+});
+
+// See ButtonGroup.js for reordering of the style definitions.
+```
+
+2. VirtualCSS works directly on class names and not styles. Therefore instead
+of using `styles` inside of JSX definitions use `className` and the `.className`
+properties on the style definitions:
+
+```js
+// react-style:
+  <div styles={ButtonGroupStyles.normalStyle}>
+
+// VirtualCSS:
+  <div className={ButtonGroupStyles.normalStyle.className}>
+```
+
+3. Instead of combining the styles dynamically it is required to define a
+style for each possible combination:
+
+```js
+// react-style:
+var styles = [
+  ButtonStyles.normalStyle,
+  props.active ? ButtonStyles.activeStyle : null,
+  state.hover ? ButtonStyles.hoverStyle : null,
+  state.focus ? ButtonStyles.focusStyle : null
+].concat(props.styles);
+
+
+// VirtualCSS:
+var ButtonStylesStates = StyleSheet.create({
+  /* Use an array to define mixin of different styles */
+  active: [ButtonStyles.normalStyle, ButtonStyles.activeStyle],
+  hover:  [ButtonStyles.normalStyle, ButtonStyles.hoverStyle],
+  focus:  [ButtonStyles.normalStyle, ButtonStyles.focusStyle],
+
+  active_hover: [
+    ButtonStyles.normalStyle,
+    ButtonStyles.activeStyle,
+    ButtonStyles.hoverStyle
+  ],
+  ...
+})
+
+// ... and then later in the React.Component to get hold of the correct styles:
+
+	// The following maps the possible states to a string.
+  var stateString, stateBits = [];
+  props.active || stateBits.push('active');
+  state.hover  || stateBits.push('hover');
+  state.focus  || stateBits.push('focus');
+  stateString = stateBits.join('_');  // E.g.: 'active_hover'
+
+  var className = ButtonStylesStates[stateString].className;
+```
+
+This makes the static analysis much easier.
+
+Writing out all the possible state combinations is far from being a nice solution.
+However in practise, I doubt there will be so many different states when pseudo
+classes are used to encode the styles for `:hover` and such.
+
+## Open issues
+
+When using a component, how to handle class inheritance? E.g.:
+
+``` js
+<Button styles={[ButtonStyles.error, ApplicationStyles.childStyle]}>
+```

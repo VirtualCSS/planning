@@ -6,39 +6,6 @@
 var StyleSheet = require('react-style');
 var React = require('react');
 
-class Button extends React.Component {
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      focus: false,
-      hover: false
-    };
-  }
-
-  render() {
-    var props = this.props;
-    var state = this.state;
-    var styles = [
-      ButtonStyles.normalStyle,
-      props.active ? ButtonStyles.activeStyle : null,
-      state.hover ? ButtonStyles.hoverStyle : null,
-      state.focus ? ButtonStyles.focusStyle : null
-    ].concat(props.styles);
-
-    return (
-      <button {...props} className="custom" styles={styles}
-        onMouseEnter={() => this.setState({hover: true})}
-        onMouseLeave={() => this.setState({hover: false})}
-        onFocus={() => this.setState({focus: true})}
-        onBlur={() => this.setState({focus: false})}>
-        {props.children}
-      </button>
-    );
-  }
-}
-
-
 var ButtonStyles = StyleSheet.create({
 
   normalStyle: {
@@ -75,5 +42,69 @@ var ButtonStyles = StyleSheet.create({
   }
 
 });
+
+var ButtonStylesStates = StyleSheet.create({
+  /* Use an array to define mixin of different styles */
+  active: [ButtonStyles.normalStyle, ButtonStyles.activeStyle],
+  hover:  [ButtonStyles.normalStyle, ButtonStyles.hoverStyle],
+  focus:  [ButtonStyles.normalStyle, ButtonStyles.focusStyle],
+
+  active_hover: [
+    ButtonStyles.normalStyle,
+    ButtonStyles.activeStyle,
+    ButtonStyles.hoverStyle
+  ],
+  active_focus: [
+    ButtonStyles.normalStyle,
+    ButtonStyles.activeStyle,
+    ButtonStyles.focusStyle
+  ],
+  active_hover_focus: [
+    ButtonStyles.normalStyle,
+    ButtonStyles.activeStyle,
+    ButtonStyles.focusStyle,
+    ButtonStyles.hoverStyle
+  ],
+  hover_focus: [
+    ButtonStyles.normalStyle,
+    ButtonStyles.focusStyle,
+    ButtonStyles.hoverStyle
+  ]
+});
+
+class Button extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      focus: false,
+      hover: false
+    };
+  }
+
+  render() {
+    var props = this.props;
+    var state = this.state;
+
+    // The following maps the possible states to a string.
+    var stateString, stateBits = [];
+    props.active || stateBits.push('active');
+    state.hover  || stateBits.push('hover');
+    state.focus  || stateBits.push('focus');
+    stateString = stateBits.join('_');  // E.g.: 'active_hover'
+
+    var className = ButtonStylesStates[stateString].className;
+
+    return (
+      <button {...props} className={className} styles={props.styles}
+        onMouseEnter={() => this.setState({hover: true})}
+        onMouseLeave={() => this.setState({hover: false})}
+        onFocus={() => this.setState({focus: true})}
+        onBlur={() => this.setState({focus: false})}>
+        {props.children}
+      </button>
+    );
+  }
+}
 
 module.exports = Button;

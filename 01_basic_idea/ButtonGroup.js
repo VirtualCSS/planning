@@ -6,23 +6,18 @@
 var StyleSheet = require('react-style');
 var React = require('react');
 
-class ButtonGroup extends React.Component {
+var ButtonGroupStyles = module.exports = StyleSheet.create({
+  normalStyle: {
+    display: 'inline'
+  }
+});
 
+class ButtonGroup extends React.Component {
   render() {
     return (
-      <div styles={ButtonGroupStyles.normalStyle}>
+      <div className={ButtonGroupStyles.normalStyle.className}>
         {this.props.children}
       </div>
     );
   }
 }
-
-var ButtonGroupStyles = StyleSheet.create({
-
-  normalStyle: {
-    display: 'inline'
-  }
-
-});
-
-module.exports = ButtonGroup;
