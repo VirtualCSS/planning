@@ -10,7 +10,7 @@ please leave a comment in this [issue](https://github.com/VirtualCSS/planning/is
 There seem many projects that try to define styling in the context of
 ReactJS. The goal of VirtualCSS is to serve as a foundation that all
 the differnet libraries can talk to and to provide common functionality
-like mounting styles in a `<style>` element in the browser, provide 
+like mounting styles in a `<style>` element in the browser, provide
 devtools plugins that work in Chrome/Firefox, optimize the declared
 styles for production builds and so on forth.
 
@@ -22,7 +22,6 @@ For initial thoughts on the VirtualCSS system see the blog post [here](https://m
 
 # License
 
-Please note that the license for the VirtualCSS project is BSD and 
-by contributing to the project you agree with the license. BSD was chosen
-as the React.JS library also uses BSD and by choosing the same license
-transfering contributions in both directions becomes possible.
+Please note that the license for the VirtualCSS project is MIT and
+by contributing to the project you agree with the license. MIT was chosen
+as many other css-in-js libraries also use the MIT license.
