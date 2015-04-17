@@ -6,9 +6,11 @@
 var StyleSheet = require('react-style');
 var React = require('react');
 
-var ButtonGroupStyles = module.exports = StyleSheet.create({
+var ButtonGroupStyles = StyleSheet.create({
   normalStyle: {
-    display: 'inline'
+    ':BASE:' {
+      display: 'inline'
+    }
   }
 });
 
@@ -21,3 +23,9 @@ class ButtonGroup extends React.Component {
     );
   }
 }
+// The following violates the assumption that all the `StyleSheet.create` results
+// must directly be assigned to `module.exports` but let's assume for now
+// this is allowed.
+ButtonGroup.Styles = ButtonGroupStyles;
+
+module.exports = ButtonGroup;

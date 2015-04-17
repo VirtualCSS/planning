@@ -45,7 +45,8 @@ properties on the style definitions:
   <div className={ButtonGroupStyles.normalStyle.className}>
 ```
 
-3. Instead of combining the styles dynamically it is required to define a
+3. TOOD(jviereck): Rewrite the following point.
+Instead of combining the styles dynamically it is required to define a
 style for each possible combination:
 
 ```js
@@ -91,10 +92,35 @@ Writing out all the possible state combinations is far from being a nice solutio
 However in practise, I doubt there will be so many different states when pseudo
 classes are used to encode the styles for `:hover` and such.
 
+4. The object returned from calls to `StyleSheet.foo()` are all frozen to prevent
+later modification by the developer.
+
+5. The default definition of style definition like "button" is defined in a
+special `:BASE:` entry.
+
+6. ["Mixins Are Dead. Long Live Composition"](https://medium.com/@dan_abramov/mixins-are-dead-long-live-higher-order-components-94a0d2f9e750):
+instead of using mixins new styles are created by composing and using composition
+functions, e.g.:
+
+```js
+var SwitcherButtonComposer = StyleSheet.composer({
+  ':BASE:' {
+    borderRadius: 0,
+    margin: 0,
+
+    // Need this here now to avoid overwriting the rules inherited from the
+    // ButtonStyles definitions.
+    ':INHERIT-PARENT:': true
+  }
+});
+
+var TextAlignChildStyleDef = SwitcherButtonComposer(ButtonStyles.button);
+```
+
+See also comments in `index.js` file. The usage of composition solves the
+previous open problem of class inheritance.
+
+
 ## Open issues
 
-When using a component, how to handle class inheritance? E.g.:
-
-``` js
-<Button styles={[ButtonStyles.error, ApplicationStyles.childStyle]}>
-```
+Handling of media queries.

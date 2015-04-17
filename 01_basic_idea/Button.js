@@ -8,99 +8,90 @@ var React = require('react');
 
 var ButtonStyles = StyleSheet.create({
 
-  normalStyle: {
-    backgroundColor: '#E6E6E6',
-    border: 'none rgba(0, 0, 0, 0)',
-    borderRadius: 3,
-    color: 'rgba(0, 0, 0, 0.70)',
-    cursor: 'pointer',
-    display: 'inline-block',
-    fontFamily: 'inherit',
-    fontSize: '100%',
-    lineHeight: 'normal',
-    padding: '0.5em 1em',
-    userSelect: 'none',
-    textAlign: 'center',
-    textDecoration: 'none',
-    verticalAlign: 'baseline',
-    whiteSpace: 'nowrap',
-    zoom: 1
-  },
+  button: {
+    // This is the basic/base styles that all the following rules inherit from.
+    ':BASE:' {
+      backgroundColor: '#E6E6E6',
+      border: 'none rgba(0, 0, 0, 0)',
+      borderRadius: 3,
+      color: 'rgba(0, 0, 0, 0.70)',
+      cursor: 'pointer',
+      display: 'inline-block',
+      fontFamily: 'inherit',
+      fontSize: '100%',
+      lineHeight: 'normal',
+      padding: '0.5em 1em',
+      userSelect: 'none',
+      textAlign: 'center',
+      textDecoration: 'none',
+      verticalAlign: 'baseline',
+      whiteSpace: 'nowrap',
+      zoom: 1
+    },
 
-  activeStyle: {
-    boxShadow: '0 0 0 1px rgba(0,0,0, 0.15) inset, 0 0 6px rgba(0,0,0, 0.20) inset'
-  },
+    // Define pseudo selectors. These inherit the styles from ':BASE:'
+    // automatically as this is the default behavior in normal CSS as well.
+    ':active': {
+      boxShadow: '0 0 0 1px rgba(0,0,0, 0.15) inset, 0 0 6px rgba(0,0,0, 0.20) inset'
+    },
 
-  hoverStyle: {
-    color: '#000',
-    backgroundImage: 'linear-gradient(transparent, rgba(0,0,0, 0.05) 40%, rgba(0,0,0, 0.10))'
-  },
+    ':hover': {
+      color: '#000',
+      backgroundImage: 'linear-gradient(transparent, rgba(0,0,0, 0.05) 40%, rgba(0,0,0, 0.10))'
+    },
 
-  focusStyle: {
-    backgroundImage: 'linear-gradient(transparent, rgba(0,0,0, 0.05) 40%, rgba(0,0,0, 0.10))',
-    outline: 'none'
+    ':focus': {
+      backgroundImage: 'linear-gradient(transparent, rgba(0,0,0, 0.05) 40%, rgba(0,0,0, 0.10))',
+      outline: 'none'
+    },
+
+    // Define states. States can inherit the styles from the ':BASE:' definitions.
+    // Possible states might be "checked" or "disabled". Note that things like
+    // "BigButton" are not states as they modify the ':BASE:' definition by
+    // composing from `ButtonStyles.button`.
+
+    'disabled': {
+      ':BASE:': {
+        color: 'gray',
+
+        // Need to specify the inherit from the ':BASE:' and other pseudo
+        // selectors explicit.
+        ':INHERIT-PARENT:': true
+      }
+
+      ':hover': {
+        // Define that no styles are inherited from the parent. As no other rules
+        // are defined here this means that hovering over a 'button.disabled'
+        // has no effect at all.
+        ':INHERIT-PARENT:': false
+      }
+    }
   }
-
-});
-
-var ButtonStylesStates = StyleSheet.create({
-  /* Use an array to define mixin of different styles */
-  active: [ButtonStyles.normalStyle, ButtonStyles.activeStyle],
-  hover:  [ButtonStyles.normalStyle, ButtonStyles.hoverStyle],
-  focus:  [ButtonStyles.normalStyle, ButtonStyles.focusStyle],
-
-  active_hover: [
-    ButtonStyles.normalStyle,
-    ButtonStyles.activeStyle,
-    ButtonStyles.hoverStyle
-  ],
-  active_focus: [
-    ButtonStyles.normalStyle,
-    ButtonStyles.activeStyle,
-    ButtonStyles.focusStyle
-  ],
-  active_hover_focus: [
-    ButtonStyles.normalStyle,
-    ButtonStyles.activeStyle,
-    ButtonStyles.focusStyle,
-    ButtonStyles.hoverStyle
-  ],
-  hover_focus: [
-    ButtonStyles.normalStyle,
-    ButtonStyles.focusStyle,
-    ButtonStyles.hoverStyle
-  ]
 });
 
 class Button extends React.Component {
 
   constructor(props) {
     super(props);
+
     this.state = {
-      focus: false,
-      hover: false
+      disabled: false
     };
   }
 
   render() {
-    var props = this.props;
-    var state = this.state;
+    var className, props = this.props, state = this.state;
 
-    // The following maps the possible states to a string.
-    var stateString, stateBits = [];
-    props.active || stateBits.push('active');
-    state.hover  || stateBits.push('hover');
-    state.focus  || stateBits.push('focus');
-    stateString = stateBits.join('_');  // E.g.: 'active_hover'
+    var styleDef = props.styleDef || ButtonStyles.button;
 
-    var className = ButtonStylesStates[stateString].className;
+    if (this.disabled) {
+      className = styleDef.disabled.className;
+    } else {
+      className = styleDef.className;
+    }
 
     return (
-      <button {...props} className={className} styles={props.styles}
-        onMouseEnter={() => this.setState({hover: true})}
-        onMouseLeave={() => this.setState({hover: false})}
-        onFocus={() => this.setState({focus: true})}
-        onBlur={() => this.setState({focus: false})}>
+      <button {...props} className={className} styles={props.styles} >
         {props.children}
       </button>
     );

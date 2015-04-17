@@ -11,53 +11,99 @@ var Button       = require('./Button');
 var ButtonStyles = require('./ButtonStyles');
 var ButtonGroup  = require('./ButtonGroup');
 
-var TextAlignSwitcher = React.createClass({
+// SEE:
+// "Mixins Are Dead. Long Live Composition"
+// https://medium.com/@dan_abramov/mixins-are-dead-long-live-higher-order-components-94a0d2f9e750
+//
+// Instead of mixin to an existing style def, the style defs are "composed".
+// The amasing benefit of this is the ability to reuse these composer functions
+// for different base style definitions.
+//
+// The idea is inspired from linearization Type Systems in OOP languages like
+// Scale (you find more about the topic here:
+// http://tech.pro/blog/2114/scala-linearization-technique-to-avoid-multiple-inheritance)
 
+// A composer is called on an existing StyleDef and defines how the resulting
+// StyleDef should look like.
+var SwitcherButtonComposer = StyleSheet.composer({
+  ':BASE:' {
+    borderRadius: 0,
+    margin: 0,
+
+    // Need this here now to avoid overwriting the rules inherited from the
+    // ButtonStyles definitions.
+    ':INHERIT-PARENT:': true
+  }
+});
+
+var FirstChildComposer = StyleSheet.composer({
+  ':BASE:' {
+    // Need this here now to avoid overwriting the rules inherited from the
+    // ButtonStyles definitions.
+    ':INHERIT-PARENT:': true
+
+    borderTopLeftRadius: 3,
+    borderBottomLeftRadius: 3
+  }
+});
+
+// Use the composers now to extend the basic `ButtonStyles.button` style definition.
+
+var TextAlignChildStyleDef = SwitcherButtonComposer(ButtonStyles.button);
+
+var TextAlignSwitcherStyles = StyleSheet.create({
+  childStyle: TextAlignChildStyleDef,
+
+  // Of course applying a composer function on the result from another composer
+  // is possible without problem.
+  firstChildStyle: FirstChildComposer(TextAlignChildStyleDef),
+
+  // The above is the same as:
+  //
+  //   firstChildStyle: FirstChildComposer(
+  //     SwitcherButtonComposer(ButtonStyles.button));
+
+  // Example to define the composition right away inline.
+  // Here it is `StyleSheet.compose` and not `StyleSheet.compose[r]`!!!
+  lastChildStyle: StyleSheet.compose(TextAlignChildStyleDef, {
+    ':BASE:' {
+      // Need this here now to avoid overwriting the rules inherited from the
+      // ButtonStyles definitions.
+      ':INHERIT-PARENT:': true
+
+      borderTopLeftRadius: 3,
+      borderBottomLeftRadius: 3
+    }
+  })
+});
+
+var TextAlignSwitcher = React.createClass({
   render() {
     var props = this.props;
 
     return (
-      <ButtonGroup styles={props.styles}>
+      <ButtonGroup styleDef={props.styleDef}>
         <Button
           active={props.textAlign === 'left'}
           onClick={() => {props.onTextAlign('left')}}
-          styles={[TextAlignSwitcherStyles.childStyle, TextAlignSwitcherStyles.firstChildStyle]}>
+          styleDef={TextAlignSwitcherStyles.firstChildStyle}>
           Left
         </Button>
         <Button
           active={props.textAlign === 'center'}
           onClick={() => {props.onTextAlign('center')}}
-          styles={[TextAlignSwitcherStyles.childStyle]}>
+          styleDef={TextAlignSwitcherStyles.childStyle}>
           Center
         </Button>
         <Button
           active={props.textAlign === 'right'}
           onClick={() => {props.onTextAlign('right')}}
-          styles={[TextAlignSwitcherStyles.childStyle, TextAlignSwitcherStyles.lastChildStyle]}>
+          styleDef={TextAlignSwitcherStyles.lastChildStyle}>
           Right
         </Button>
       </ButtonGroup>
     );
   }
-});
-
-var TextAlignSwitcherStyles = StyleSheet.create({
-
-  childStyle: {
-    borderRadius: 0,
-    margin: 0
-  },
-
-  firstChildStyle: {
-    borderTopLeftRadius: 3,
-    borderBottomLeftRadius: 3
-  },
-
-  lastChildStyle: {
-    borderTopRightRadius: 3,
-    borderBottomRightRadius: 3
-  }
-
 });
 
 var Application = React.createClass({
@@ -70,16 +116,16 @@ var Application = React.createClass({
 
   render() {
     return (
-      <div styles={ApplicationStyles.normalStyle}>
+      <div className={ApplicationStyles.normalStyle.className}>
         <h1 styles={{textAlign: this.state.textAlign}}>Application</h1>
-        <Button styles={[ButtonStyles.success]}>
+        <Button styleDef={ButtonStyles.success(ButtonStyles.button)}>
           OK
         </Button>
-        <Button styles={[ButtonStyles.error, ApplicationStyles.childStyle]}>
+        <Button styleDef={ButtonStyles.error(ApplicationStyles.childStyle)]}>
           Cancel
         </Button>
         <TextAlignSwitcher
-          styles={ApplicationStyles.lastChild}
+          styleDef={ApplicationStyles.lastChild}
           onTextAlign={(textAlign) => this.setState({textAlign: textAlign})}
           />
       </div>
@@ -92,31 +138,43 @@ var Application = React.createClass({
 var ApplicationStyles = StyleSheet.create({
 
   normalStyle: {
-    backgroundColor: 'white',
-    fontSize: '10pt',
-    padding: '1em',
-    margin: 10
-  },
-
-  childStyle: {
-    marginRight: '0.5em'
-  },
-
-  lastChildStyle: {
-    marginRight: 0
-  },
-
-  '@media screen and (min-width: 800px)': {
-    normalStyle: {
-      backgroundColor: 'purple'
-    },
-    childStyle: {
-      marginLeft: 50
+    ':BASE:': {
+      backgroundColor: 'white',
+      fontSize: '10pt',
+      padding: '1em',
+      margin: 10
     }
-  }
-    
+  },
+
+  childStyle: StyleSheet.compose(ButtonStyles.button, {
+    ':BASE:': {
+      ':INHERIT-PARENT:': true,
+
+      marginRight: '0.5em'
+    }
+  }),
+
+  lastChildStyle: StyleSheet.compose(ButtonGroup.Styles, {
+    ':BASE:': {
+      ':INHERIT-PARENT:': true,
+
+      marginRight: 0
+    }
+  },
+
+  // TODO: Deal with @media queries.
+  //
+  // '@media screen and (min-width: 800px)': {
+  //   normalStyle: {
+  //     backgroundColor: 'purple'
+  //   },
+  //   childStyle: {
+  //     marginLeft: 50
+  //   }
+  // }
+
 });
-  
+
 
 if (typeof window !== 'undefined') {
   React.render(<Application />, document.getElementById('app'));
