@@ -8,7 +8,7 @@ var React = require('react');
 
 var ButtonGroupStyles = StyleSheet.create({
   normalStyle: {
-    ':BASE:' {
+    '!BASE' {
       display: 'inline'
     }
   }

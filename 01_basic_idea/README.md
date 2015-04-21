@@ -61,22 +61,22 @@ later.)
       state.hover ? ButtonStyles.hoverStyle : null,
       state.focus ? ButtonStyles.focusStyle : null
     ].concat(props.styles);
-    
+
     (...)
-    
+
     // VirtualCSS:
-    
+
     // Do not combine styles in here. Either use the style definitions as passed in to
     // the component via `props` or use a default style definition.
     var styleDef = this.props.styleDef || ButtonStyles.button;
-    
+
     // Also, choosing a state like "disabled" must be done explicit.
     if (this.disabled) {
       className = styleDef.disabled.className;
     } else {
       className = styleDef.className;
     }
-    
+
     (...)
 ```
 
@@ -87,11 +87,11 @@ function, that takes an object literal, can be used:
 
 ```js
     // VirtualCSS:
-    
+
     // At runtime, the `styleDef.stateCombo` function will map to the correct `className`
     // based on the passed in value.
     className = styleDef.stateCombo({
-      active: props.active, 
+      active: props.active,
       hover: state.hover,
       focus: state.focus
     });
@@ -101,8 +101,8 @@ function, that takes an object literal, can be used:
 later modification by the developer.
 
 5) The default definition of style definition like "button" is defined in a
-special `:BASE:` entry. This makes extending/overwriting the base style definitions
-later more explicit. (At this point I/jviereck am not sure if adding the extra `:BASE:`
+special `!BASE` entry. This makes extending/overwriting the base style definitions
+later more explicit. (At this point I/jviereck am not sure if adding the extra `!BASE`
 is worth the overhead and therefore might be removed in a later iteration again.)
 
 ```js
@@ -110,59 +110,53 @@ is worth the overhead and therefore might be removed in a later iteration again.
 var ButtonStyles = StyleSheet.create({
   button: {
     // This is the basic/base styles that all the following rules inherit from.
-    ':BASE:' {
+    '!BASE' {
       backgroundColor: '#E6E6E6',
       border: 'none rgba(0, 0, 0, 0)',
       // ... more styles here ...
     },
-  
-    // Define pseudo selectors. These pseudo selectors the styles from ':BASE:'
+
+    // Define pseudo selectors. These pseudo selectors the styles from '!BASE'
     // automatically as this is the default behavior in normal CSS as well.
     ':hover': {
       color: '#000',
     },
-    
+
     ...
   }
 });
 ```
 
-6) A style definition like `button` above can have additional states like "disabled". These states
-must define the inheritance of styles from the parent rule explicit.
+6) A style definition like `button` above can have additional states like "disabled".
+States inherit their styles from their parent rules automatically.
 
 ```js
 // VirtualCSS:
 var ButtonStyles = StyleSheet.create({
   button: {
     // This is the basic/base styles that all the following rules inherit from.
-    ':BASE:' {
+    '!BASE' {
       backgroundColor: '#E6E6E6',
       border: 'none rgba(0, 0, 0, 0)',
       // ... more styles here ...
     },
-    
+
     ':hover': {
       color: '#000',
     },
-    
-    // Define states. States can inherit the styles from the ':BASE:' definitions.
+
+    // Define states. States can inherit the styles from the '!BASE' definitions.
     // Possible states might be "checked" or "disabled". Note that things like
-    // "BigButton" are not states as they modify the ':BASE:' definition by
+    // "BigButton" are not states as they modify the '!BASE' definition by
     // composing from `ButtonStyles.button` as described further below.
     'disabled': {
-      ':BASE:': {
+      '!BASE': {
         color: 'gray',
-
-        // Need to specify the inherit from the ':BASE:' and other pseudo
-        // selectors explicit.
-        ':INHERIT-PARENT:': true
       }
 
       ':hover': {
-        // Define that no styles are inherited from the parent. As no other rules
-        // are defined here this means that hovering over a 'button.disabled'
-        // has no effect at all.
-        ':INHERIT-PARENT:': false
+        // TODO(jviereck): Support a way to reset all the inherited rules.
+        // '!RESET': true
       }
     }
   }
@@ -177,13 +171,9 @@ functions, e.g.:
 ```js
 // VirtualCSS:
 var SwitcherButtonComposer = StyleSheet.composer({
-  ':BASE:' {
+  '!BASE' {
     borderRadius: 0,
-    margin: 0,
-
-    // The following is necessary to inherit the ':BASE:' rules as
-    // defined by the styling definition that is composed over.
-    ':INHERIT-PARENT:': true
+    margin: 0
   }
 });
 
@@ -194,7 +184,7 @@ var TextAlignChildStyleDef = SwitcherButtonComposer(ButtonStyles.button);
 
 See also comments in `index.js` file.
 
-The usage of composition solves the previous open problem of class inheritance. 
+The usage of composition solves the previous open problem of class inheritance.
 E.g. the previous code to alter the look of a button:
 
 ```js

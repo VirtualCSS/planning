@@ -7,10 +7,9 @@ var StyleSheet = require('react-style');
 var React = require('react');
 
 var ButtonStyles = StyleSheet.create({
-
   button: {
     // This is the basic/base styles that all the following rules inherit from.
-    ':BASE:' {
+    '!BASE' {
       backgroundColor: '#E6E6E6',
       border: 'none rgba(0, 0, 0, 0)',
       borderRadius: 3,
@@ -29,7 +28,7 @@ var ButtonStyles = StyleSheet.create({
       zoom: 1
     },
 
-    // Define pseudo selectors. These inherit the styles from ':BASE:'
+    // Define pseudo selectors. These inherit the styles from '!BASE'
     // automatically as this is the default behavior in normal CSS as well.
     ':active': {
       boxShadow: '0 0 0 1px rgba(0,0,0, 0.15) inset, 0 0 6px rgba(0,0,0, 0.20) inset'
@@ -45,25 +44,19 @@ var ButtonStyles = StyleSheet.create({
       outline: 'none'
     },
 
-    // Define states. States can inherit the styles from the ':BASE:' definitions.
+    // Define states. States can inherit the styles from the '!BASE' definitions.
     // Possible states might be "checked" or "disabled". Note that things like
-    // "BigButton" are not states as they modify the ':BASE:' definition by
+    // "BigButton" are not states as they modify the '!BASE' definition by
     // composing from `ButtonStyles.button`.
 
     'disabled': {
-      ':BASE:': {
-        color: 'gray',
-
-        // Need to specify the inherit from the ':BASE:' and other pseudo
-        // selectors explicit.
-        ':INHERIT-PARENT:': true
+      '!BASE': {
+        color: 'gray'
       }
 
       ':hover': {
-        // Define that no styles are inherited from the parent. As no other rules
-        // are defined here this means that hovering over a 'button.disabled'
-        // has no effect at all.
-        ':INHERIT-PARENT:': false
+        // TODO(jviereck): Support a way to reset all the inherited rules.
+        // '!RESET': true
       }
     }
   }

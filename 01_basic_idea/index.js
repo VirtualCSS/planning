@@ -26,22 +26,14 @@ var ButtonGroup  = require('./ButtonGroup');
 // A composer is called on an existing StyleDef and defines how the resulting
 // StyleDef should look like.
 var SwitcherButtonComposer = StyleSheet.composer({
-  ':BASE:' {
+  '!BASE' {
     borderRadius: 0,
     margin: 0,
-
-    // Need this here now to avoid overwriting the rules inherited from the
-    // ButtonStyles definitions.
-    ':INHERIT-PARENT:': true
   }
 });
 
 var FirstChildComposer = StyleSheet.composer({
-  ':BASE:' {
-    // Need this here now to avoid overwriting the rules inherited from the
-    // ButtonStyles definitions.
-    ':INHERIT-PARENT:': true
-
+  '!BASE' {
     borderTopLeftRadius: 3,
     borderBottomLeftRadius: 3
   }
@@ -66,11 +58,7 @@ var TextAlignSwitcherStyles = StyleSheet.create({
   // Example to define the composition right away inline.
   // Here it is `StyleSheet.compose` and not `StyleSheet.compose[r]`!!!
   lastChildStyle: StyleSheet.compose(TextAlignChildStyleDef, {
-    ':BASE:' {
-      // Need this here now to avoid overwriting the rules inherited from the
-      // ButtonStyles definitions.
-      ':INHERIT-PARENT:': true
-
+    '!BASE' {
       borderTopLeftRadius: 3,
       borderBottomLeftRadius: 3
     }
@@ -138,7 +126,7 @@ var Application = React.createClass({
 var ApplicationStyles = StyleSheet.create({
 
   normalStyle: {
-    ':BASE:': {
+    '!BASE': {
       backgroundColor: 'white',
       fontSize: '10pt',
       padding: '1em',
@@ -147,17 +135,13 @@ var ApplicationStyles = StyleSheet.create({
   },
 
   childStyle: StyleSheet.compose(ButtonStyles.button, {
-    ':BASE:': {
-      ':INHERIT-PARENT:': true,
-
+    '!BASE': {
       marginRight: '0.5em'
     }
   }),
 
   lastChildStyle: StyleSheet.compose(ButtonGroup.Styles, {
-    ':BASE:': {
-      ':INHERIT-PARENT:': true,
-
+    '!BASE': {
       marginRight: 0
     }
   },
