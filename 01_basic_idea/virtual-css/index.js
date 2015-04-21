@@ -122,7 +122,7 @@ var deepAssign = function(object, source) {
       if (_.isObject(value)) {
         deepAssign(object[key], value);
       } else {
-        _.assign(object[key], value);
+        object[key] = value;
       }
     }
   });
