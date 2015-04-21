@@ -125,7 +125,8 @@ var ApplicationStyles = StyleSheet.create({
 
   normalStyle: {
     '!BASE': {
-      backgroundColor: 'white',
+      // backgroundColor: 'white',  << Use this once @media is supported.
+      backgroundColor: 'purple',
       fontSize: '10pt',
       padding: '1em',
       margin: 10
@@ -134,13 +135,8 @@ var ApplicationStyles = StyleSheet.create({
 
   childStyle: StyleSheet.compose(Button.styles.button, {
     '!BASE': {
-      marginRight: '0.5em'
-    }
-  }),
-
-  lastChildStyle: StyleSheet.compose(ButtonGroup.styles.normalStyle, {
-    '!BASE': {
-      marginRight: 0
+      marginRight: '0.5em',
+      marginLeft: 50
     }
   })
 
