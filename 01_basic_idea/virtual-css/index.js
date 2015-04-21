@@ -114,8 +114,23 @@ module.exports.composer = function(spec) {
   }
 }
 
+var deepAssign = function(object, source) {
+  _.forEach(source, (value, key) => {
+    if (object[key] === undefined) {
+      object[key] = value;
+    } else {
+      if (_.isObject(value)) {
+        deepAssign(object[key], value);
+      } else {
+        _.assign(object[key], value);
+      }
+    }
+  });
+  return object;
+}
+
 module.exports.compose = function(ruleDef, spec) {
-  var newSpec = _.assign(_.clone(ruleDef.$ruleSpec, true /* deep clone */), spec);
+  var newSpec = deepAssign(_.clone(ruleDef.$ruleSpec, true /* deep clone */), spec);
 
   // TODO: The following is VERY inefficient. Regenerating the entire `spec`
   // leads to a lot of duplicate CSS content. This is okay for now hoping a
