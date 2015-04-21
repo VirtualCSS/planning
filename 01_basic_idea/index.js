@@ -3,9 +3,7 @@
  */
 'use strict';
 
-require('normalize.css/normalize.css');
-
-var StyleSheet   = require('react-style');
+var StyleSheet   = require('virtual-css');
 var React        = require('react');
 var Button       = require('./Button');
 var ButtonStyles = require('./ButtonStyles');
@@ -26,14 +24,14 @@ var ButtonGroup  = require('./ButtonGroup');
 // A composer is called on an existing StyleDef and defines how the resulting
 // StyleDef should look like.
 var SwitcherButtonComposer = StyleSheet.composer({
-  '!BASE' {
+  '!BASE': {
     borderRadius: 0,
     margin: 0,
   }
 });
 
 var FirstChildComposer = StyleSheet.composer({
-  '!BASE' {
+  '!BASE': {
     borderTopLeftRadius: 3,
     borderBottomLeftRadius: 3
   }
@@ -58,7 +56,7 @@ var TextAlignSwitcherStyles = StyleSheet.create({
   // Example to define the composition right away inline.
   // Here it is `StyleSheet.compose` and not `StyleSheet.compose[r]`!!!
   lastChildStyle: StyleSheet.compose(TextAlignChildStyleDef, {
-    '!BASE' {
+    '!BASE': {
       borderTopLeftRadius: 3,
       borderBottomLeftRadius: 3
     }
@@ -109,7 +107,7 @@ var Application = React.createClass({
         <Button styleDef={ButtonStyles.success(ButtonStyles.button)}>
           OK
         </Button>
-        <Button styleDef={ButtonStyles.error(ApplicationStyles.childStyle)]}>
+        <Button styleDef={ButtonStyles.error(ApplicationStyles.childStyle)}>
           Cancel
         </Button>
         <TextAlignSwitcher
@@ -144,7 +142,7 @@ var ApplicationStyles = StyleSheet.create({
     '!BASE': {
       marginRight: 0
     }
-  },
+  })
 
   // TODO: Deal with @media queries.
   //

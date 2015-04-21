@@ -1,6 +1,6 @@
 'use strict';
 
-var StyleSheet = require('react-style');
+var StyleSheet = require('virtual-css');
 
 // SEE the comment in index.js what the motivation behind the `StyleSheet.composer`
 // is about.

@@ -8,6 +8,28 @@ https://github.com/js-next/react-style/tree/f957e09dfb4948/examples/0.13/simple
 
 and later modified to fit the design idea behind VirtualCSS.
 
+## How to run the example
+
+Install the dependencies via:
+
+```bash
+$ npm install
+```
+
+To run the webpack-dev-server please also install it via
+
+```bash
+$ npm install webpack-dev-server -g
+```
+
+Then you can start the development server by executing:
+
+```bash
+$ webpack-dev-server
+```
+
+Which should serve the example at `http://localhost:8080/webpack-dev-server/`.
+
 ## Changes compared to react-style
 
 Overall, the changes listed here are required to make the analysis of the code

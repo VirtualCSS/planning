@@ -3,12 +3,12 @@
  */
 'use strict';
 
-var StyleSheet = require('react-style');
+var StyleSheet = require('virtual-css');
 var React = require('react');
 
 var ButtonGroupStyles = StyleSheet.create({
   normalStyle: {
-    '!BASE' {
+    '!BASE': {
       display: 'inline'
     }
   }

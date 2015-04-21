@@ -3,13 +3,13 @@
  */
 'use strict';
 
-var StyleSheet = require('react-style');
+var StyleSheet = require('virtual-css');
 var React = require('react');
 
 var ButtonStyles = StyleSheet.create({
   button: {
     // This is the basic/base styles that all the following rules inherit from.
-    '!BASE' {
+    '!BASE': {
       backgroundColor: '#E6E6E6',
       border: 'none rgba(0, 0, 0, 0)',
       borderRadius: 3,
@@ -52,7 +52,7 @@ var ButtonStyles = StyleSheet.create({
     'disabled': {
       '!BASE': {
         color: 'gray'
-      }
+      },
 
       ':hover': {
         // TODO(jviereck): Support a way to reset all the inherited rules.
