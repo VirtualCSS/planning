@@ -1,0 +1,10 @@
+{
+  "name": "virtualcss-planing",
+  "version": "0.0.1",
+  "author": "'Juilan Viereck' <julian.viereck@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-loader": "^4.0.0"
+  },
+  "dependencies": { }
+}
