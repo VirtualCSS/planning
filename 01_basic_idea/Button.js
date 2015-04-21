@@ -6,7 +6,38 @@
 var StyleSheet = require('virtual-css');
 var React = require('react');
 
-var ButtonStyles = StyleSheet.create({
+class Button extends React.Component {
+
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      disabled: false
+    };
+  }
+
+  render() {
+    var className, props = this.props, state = this.state;
+
+    var styleDef = props.styleDef || ButtonStyles.button;
+
+    if (this.disabled) {
+      className = styleDef.disabled.className;
+    } else {
+      className = styleDef.className;
+    }
+
+    return (
+      <button {...props} className={className} styles={props.styles} >
+        {props.children}
+      </button>
+    );
+  }
+}
+
+module.exports = Button;
+
+var ButtonStyles = module.exports.styles = StyleSheet.create({
   button: {
     // This is the basic/base styles that all the following rules inherit from.
     '!BASE': {
@@ -61,34 +92,3 @@ var ButtonStyles = StyleSheet.create({
     }
   }
 });
-
-class Button extends React.Component {
-
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      disabled: false
-    };
-  }
-
-  render() {
-    var className, props = this.props, state = this.state;
-
-    var styleDef = props.styleDef || ButtonStyles.button;
-
-    if (this.disabled) {
-      className = styleDef.disabled.className;
-    } else {
-      className = styleDef.className;
-    }
-
-    return (
-      <button {...props} className={className} styles={props.styles} >
-        {props.children}
-      </button>
-    );
-  }
-}
-
-module.exports = Button;

@@ -39,7 +39,7 @@ var FirstChildComposer = StyleSheet.composer({
 
 // Use the composers now to extend the basic `ButtonStyles.button` style definition.
 
-var TextAlignChildStyleDef = SwitcherButtonComposer(ButtonStyles.button);
+var TextAlignChildStyleDef = SwitcherButtonComposer(Button.styles.button);
 
 var TextAlignSwitcherStyles = StyleSheet.create({
   childStyle: TextAlignChildStyleDef,
@@ -104,7 +104,7 @@ var Application = React.createClass({
     return (
       <div className={ApplicationStyles.normalStyle.className}>
         <h1 styles={{textAlign: this.state.textAlign}}>Application</h1>
-        <Button styleDef={ButtonStyles.success(ButtonStyles.button)}>
+        <Button styleDef={ButtonStyles.success(Button.styles.button)}>
           OK
         </Button>
         <Button styleDef={ButtonStyles.error(ApplicationStyles.childStyle)}>
@@ -138,7 +138,7 @@ var ApplicationStyles = StyleSheet.create({
     }
   }),
 
-  lastChildStyle: StyleSheet.compose(ButtonGroup.Styles, {
+  lastChildStyle: StyleSheet.compose(ButtonGroup.styles.normalStyle, {
     '!BASE': {
       marginRight: 0
     }
