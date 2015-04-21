@@ -1,13 +1,21 @@
 // Basic implementation of the runtime system of VirtualCSS.
 
-var _ = lodash;
-var buildCSSRule = require('buildCSSRule').buildCSSRule;
+var _ = require('lodash');
+var buildCSSRule = require('./buildCSSRule');
+
+var __DEBUG__ = true;
 
 var classCounter = 0;
 
+var RuleDef = function(ruleName, ruleSpec, className) {
+  this.$ruleName = ruleName;
+  this.$ruleSpec = ruleSpec;
+  this.className = className;
+}
+
 var generateSelector = function(selectorStr, body) {
   var content = _.map(body, (value, key) => buildCSSRule(key, value)).join('\n');
-  return `${selectorStr} {\n${content}\n}`;
+  return `${selectorStr} {\n${content}\n}\n`;
 }
 
 var getClassName = function(ruleName) {
@@ -29,34 +37,42 @@ var getPseudoSelectors = function(ruleSpec) {
 
 var getNestedRules = function(ruleSpec) {
   var nestedKeys = Object.keys(ruleSpec).filter((key) => {
-    return !(key.startsWith('$') || key.startsWith(':') || key.startsWith('['));
+    return !(key.startsWith('!') || key.startsWith(':') || key.startsWith('['));
   });
   return filterObjectKeys(ruleSpec, nestedKeys);
 }
 
 var generateRule = function(ruleName, ruleSpec, inherited_classes) {
+  // For the case to reassign an existing RuleDef to a new ruleName, like in:
+  //
+  // > var TextAlignSwitcherStyles = StyleSheet.create({
+  // >   childStyle: TextAlignChildStyleDef,
+  if (ruleSpec instanceof RuleDef) {
+    // Leaving the content empty as the there is nothing new to generate for
+    // this rule here.
+    return [ruleSpec, ''];
+  }
+
+  if (__DEBUG__) {
+    console.log('call generateRule: ', ruleName, ruleSpec, inherited_classes);
+  }
+
   var content = '';
   var className = getClassName(ruleName);
   var classSelector = '.' + className;
-  var combinedClassName = inherited_classes + ' ' + classSelector;
+  var combinedClassName = inherited_classes + ' ' + className;
 
-  var ret = {
-    $ruleName: ruleName,
-    $ruleSpec: ruleSpec,
-    className: combinedClassName,
-  };
-
-  // TODO: Support attributes here as well.
-  var pseudoSelectors = getPseudoSelectors(ruleSpec);
+  var ret = new RuleDef(ruleName, ruleSpec, combinedClassName);
 
   // Generate the CSS for the main class.
-  content += generateSelector(classSelector, ruleSpec['$BASE'] || {});
+  content += generateSelector(classSelector, ruleSpec['!BASE'] || {});
 
   // Generate the CSS for the pseudo selectors.
-  content += _.map(pseudoSelectors, (value, key) => {
+  content += _.map(getPseudoSelectors(ruleSpec), (value, key) => {
     return generateSelector(classSelector + key, value);
   }).join('\n');
 
+  // TODO: Support attributes here as well.
 
   // Generate the CSS for the nested selectors. For these, call `generateRule`
   // recursivly again and pass the `combinedClassName` as base class to
@@ -68,6 +84,11 @@ var generateRule = function(ruleName, ruleSpec, inherited_classes) {
     return rule_content;
   }).join('\n');
 
+  if (__DEBUG__) {
+    ret.$content = content;
+  }
+
+
   return [ret, content];
 }
 
@@ -75,9 +96,10 @@ module.exports.create = function(spec) {
   var content = '';
   var ret = {};
 
-  return _.forEach(spec, (ruleSpec, ruleName) => {
+  _.forEach(spec, (ruleSpec, ruleName) => {
     var [rule_def, rule_content] = generateRule(ruleName, ruleSpec, '');
     ret[ruleName] = rule_def;
+    content += rule_content;
   });
 
   // Mount the comptued CSS on the page.
@@ -88,7 +110,7 @@ module.exports.create = function(spec) {
 
 module.exports.composer = function(spec) {
   return function(ruleDef) {
-    module.exports.compose(ruleDef, spec);
+    return module.exports.compose(ruleDef, spec);
   }
 }
 
@@ -99,7 +121,7 @@ module.exports.compose = function(ruleDef, spec) {
   // leads to a lot of duplicate CSS content. This is okay for now hoping a
   // later optimisation pass will get rid of the duplication anyway.
   var [rule_def, rule_content] =
-      generateRule(ruleDef.$ruleName + '_composed', newSpec, '');
+      generateRule(ruleDef.$ruleName + '_cmp', newSpec, '');
 
   // Apply the new generated CSS to the page.
   mountCSSContent(rule_content);
@@ -113,6 +135,9 @@ module.exports.function = function() {
 }
 
 var mountCSSContent = function(content) {
-  console.log('TODO: Mount CSS content', content);
+  // Create the actual style element and mount it in the document's <head>.
+  var style = document.createElement('style');
+  style.textContent = content;
+  document.head.appendChild(style);
 }
 

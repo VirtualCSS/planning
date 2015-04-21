@@ -132,7 +132,7 @@ var ApplicationStyles = StyleSheet.create({
     }
   },
 
-  childStyle: StyleSheet.compose(ButtonStyles.button, {
+  childStyle: StyleSheet.compose(Button.styles.button, {
     '!BASE': {
       marginRight: '0.5em'
     }
