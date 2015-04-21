@@ -42,7 +42,7 @@ var generateRule = function(ruleName, ruleSpec, inherited_classes) {
 
   var ret = {
     $ruleName: ruleName,
-    $spec: ruleSpec,
+    $ruleSpec: ruleSpec,
     className: combinedClassName,
   };
 
@@ -63,8 +63,8 @@ var generateRule = function(ruleName, ruleSpec, inherited_classes) {
   // inherit from.
   var nestedRules = getNestedRules(ruleSpec);
   content += _.map(nestedRules, (value, key) => {
-    var [rule_ret, rule_content] = generateRule(key, value, combinedClassName);
-    ret[key] = rule_ret;
+    var [rule_def, rule_content] = generateRule(key, value, combinedClassName);
+    ret[key] = rule_def;
     return rule_content;
   }).join('\n');
 
@@ -76,8 +76,8 @@ module.exports.create = function(spec) {
   var ret = {};
 
   return _.forEach(spec, (ruleSpec, ruleName) => {
-    var [rule_ret, rule_content] = generateRule(ruleName, ruleSpec, '');
-    ret[ruleName] = rule_ret;
+    var [rule_def, rule_content] = generateRule(ruleName, ruleSpec, '');
+    ret[ruleName] = rule_def;
   });
 
   // Mount the comptued CSS on the page.
@@ -87,11 +87,25 @@ module.exports.create = function(spec) {
 }
 
 module.exports.composer = function(spec) {
-
+  return function(ruleDef) {
+    module.exports.compose(ruleDef, spec);
+  }
 }
 
-module.exports.compose = function() {
-  // TODO:
+module.exports.compose = function(ruleDef, spec) {
+  var newSpec = _.assign(_.clone(ruleDef.$ruleSpec, true /* deep clone */), spec);
+
+  // TODO: The following is VERY inefficient. Regenerating the entire `spec`
+  // leads to a lot of duplicate CSS content. This is okay for now hoping a
+  // later optimisation pass will get rid of the duplication anyway.
+  var [rule_def, rule_content] =
+      generateRule(ruleDef.$ruleName + '_composed', newSpec, '');
+
+  // Apply the new generated CSS to the page.
+  mountCSSContent(rule_content);
+
+  // Return the rule definition.
+  return rule_def;
 }
 
 module.exports.function = function() {
