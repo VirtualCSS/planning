@@ -2,8 +2,7 @@
 
 Repository for planning and brainstorming on VirtualCSS.
 
-*If you are interested in this project and want to join the discussion
-please leave a comment in this [issue](https://github.com/VirtualCSS/planning/issues/1).*
+[![No Maintenance Intended](http://unmaintained.tech/badge.svg)](http://unmaintained.tech/)
 
 For initial thoughts on the VirtualCSS system see the blog post [here](https://medium.com/@jviereck/modularise-css-the-react-way-1e817b317b04).
 
